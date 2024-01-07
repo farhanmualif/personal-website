@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE `product` ADD COLUMN `rate` DOUBLE NOT NULL DEFAULT 0;
+
+-- AlterTable
+ALTER TABLE `store` ADD COLUMN `rate` DOUBLE NOT NULL DEFAULT 0;

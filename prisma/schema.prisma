@@ -1,0 +1,118 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             Int      @id @default(autoincrement())
+  uuid           String   @default(uuid())
+  roleId         Int
+  email          String   @unique
+  password       String
+  name           String?
+  role           Role     @relation(fields: [roleId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  Store          Store[]
+  Image          String   @default("profile_image.png")
+  updateAt       DateTime
+  createdAt      DateTime @default(now())
+  Cart           Cart[]
+  SellerOrders   Order[]  @relation("SellerOrders")
+  CustomerOrders Order[]  @relation("CustomerOrders")
+}
+
+model Role {
+  id        Int      @id @default(autoincrement())
+  name      String
+  User      User[]
+  updateAt  DateTime
+  createdAt DateTime @default(now())
+}
+
+model Store {
+  id        Int       @id @default(autoincrement())
+  uuid      String    @default(uuid())
+  name      String
+  address   String
+  ownerId   Int
+  owner     User      @relation(fields: [ownerId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  Product   Product[]
+  Image     String    @default("store_image.png")
+  rate      Float     @default(0)
+  updateAt  DateTime
+  createdAt DateTime  @default(now())
+}
+
+model Product {
+  id           Int             @id @default(autoincrement())
+  uuid         String          @default(uuid())
+  name         String
+  price        String
+  categoryId   Int
+  storeId      Int
+  category     ProductCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  rate         Float           @default(0)
+  discount     Float?
+  freeShipping Boolean         @default(false)
+  storeName    Store           @relation(fields: [storeId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  Image        String          @default("default.png")
+  updateAt     DateTime
+  createdAt    DateTime        @default(now())
+  Cart         Cart[]
+}
+
+model ProductCategory {
+  id        Int       @id @default(autoincrement())
+  uuid      String    @default(uuid())
+  name      String
+  Product   Product[]
+  updateAt  DateTime
+  createdAt DateTime  @default(now())
+}
+
+model Cart {
+  id        Int     @id @default(autoincrement())
+  uuid      String  @default(uuid())
+  productId Int
+  userId    Int
+  Product   Product @relation(fields: [productId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  User      User    @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+}
+
+model Order {
+  id         Int      @id @default(autoincrement())
+  uuid       String   @default(uuid())
+  productId  Int
+  seller     User     @relation("SellerOrders", fields: [sellerId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  customer   User     @relation("CustomerOrders", fields: [customerId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  sellerId   Int
+  customerId Int
+  Payment    Payment  @relation(fields: [paymentId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  paymentId  Int
+  Shipping   Shipping @relation(fields: [shippingId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  shippingId Int
+}
+
+model Payment {
+  id          Int     @id @default(autoincrement())
+  uuid        String  @default(uuid())
+  method      String
+  totalAmount Int
+  Order       Order[]
+}
+
+model Shipping {
+  id       Int     @id @default(autoincrement())
+  noResi   String
+  provider String
+  from     String
+  to       String
+  price    Int
+  Order    Order[]
+}

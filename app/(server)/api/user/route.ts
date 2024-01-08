@@ -1,7 +1,1 @@
-
-
-
-
-export default function GET(request: Request){
-
-}
+export default function GET(request: Request) {}

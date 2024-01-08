@@ -7,7 +7,6 @@ import ProductImage6 from "../img/product6.jpg";
 import ProductImage7 from "../img/product7.jpg";
 import ProductImage8 from "../img/product8.jpeg";
 
-
 const ProductImages = [
   {
     image: ProductImage1,

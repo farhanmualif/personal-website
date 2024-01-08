@@ -12,7 +12,6 @@ interface Product {
 }
 
 export default function CardMenu({ products }: { products: Product[] }) {
-  console.log(products);
   return (
     <section className="py-2">
       <div className="container mx-auto lg:px-6 grid  grid-cols-1 gap-6 p-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
@@ -23,7 +22,7 @@ export default function CardMenu({ products }: { products: Product[] }) {
             <Link href="#">
               <div className="relative flex items-end overflow-hidden rounded-xl">
                 <Image
-                  src={"/" + product.image}
+                  src={"/image/product/" + product.image}
                   alt="mockup"
                   width={500}
                   height={300}
@@ -31,13 +30,13 @@ export default function CardMenu({ products }: { products: Product[] }) {
                 {product.discount && (
                   <div className="absolute top-3 inline-flex items-center rounded-e-md bg-white p-2 shadow-md">
                     <span className="ml-1 text-sm text-slate-400">
-                      {product.discount}
+                      Disc {product.discount}%
                     </span>
                   </div>
                 )}
                 {product.freeShipping && (
                   <p className="absolute bottom-0 inline-flex mt-1 text-sm items-center rounded-tr-xl bg-red-500 text-white px-2 py-2 w-34">
-                    {product.freeShipping}
+                    Free Ongkir
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       fill="none"
@@ -78,7 +77,9 @@ export default function CardMenu({ products }: { products: Product[] }) {
                   {product.address}
                 </p>
                 <div className="mt-2 flex items-center">
-                  {[1, 2, 3, 4, 5].map((star) => (
+                  {Array.from({ length: product.rate }, (_, _index): any => {
+                    index + 1;
+                  }).map((star) => (
                     <svg
                       key={star}
                       xmlns="http://www.w3.org/2000/svg"
@@ -89,7 +90,7 @@ export default function CardMenu({ products }: { products: Product[] }) {
                     </svg>
                   ))}
                   <span className="ml-1 text-xs text-white bg-blue-400 py-1 px-2 rounded">
-                    5.0
+                    {product.rate}
                   </span>
                 </div>
 

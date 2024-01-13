@@ -1,8 +1,10 @@
 import { error } from "@material-tailwind/react/types/components/input";
 import database from "../database/database";
-import getTimeNow from "../helper/get-time";
+import getTimeNow from "../lib/get-time";
 import { Product, RequestProduct } from "../interface/interface";
 import { PrismaClientValidationError } from "@prisma/client/runtime/library";
+import escapeHTML from "escape-html";
+import { ErrorException } from "../error/error-exception";
 
 export default class ProductServices {
   static async getAll(): Promise<Product[] | unknown> {
@@ -24,7 +26,6 @@ export default class ProductServices {
           freeShipping: product.freeShipping,
         };
       });
-
       return data;
     } catch (error) {
       return error;
@@ -33,7 +34,7 @@ export default class ProductServices {
 
   static async getById(id: number): Promise<Product | unknown> {
     try {
-      const product = await database.product.findUniqueOrThrow({
+      const product = await database.product.findUnique({
         where: {
           id,
         },
@@ -41,17 +42,20 @@ export default class ProductServices {
           storeName: true,
         },
       });
-
-      const data: Product = {
-        name: product.name,
-        price: product.price,
-        address: product.storeName.address,
-        image: product.Image,
-        rate: product.rate,
-        discount: product.discount,
-        freeShipping: product.freeShipping,
-      };
-      return data;
+      if (product) {
+        const data: Product = {
+          name: product.name,
+          price: product.price,
+          address: product.storeName.address,
+          image: product.Image,
+          rate: product.rate,
+          discount: product.discount,
+          freeShipping: product.freeShipping,
+        };
+        return data;
+      } else {
+        return null;
+      }
     } catch (error) {
       return error;
     }
@@ -62,15 +66,14 @@ export default class ProductServices {
       console.log("request", request);
       const insert = await database.product.create({
         data: {
-          name: request.name,
-          price: String(request.price),
-          categoryId: request.categoryId,
-          storeId: request.storeId,
-          createdAt: request.createAt,
-          updateAt: getTimeNow(new Date()),
+          name: escapeHTML(request.name),
+          price: escapeHTML(String(request.price)),
+          categoryId: Number(escapeHTML(String(request.categoryId))),
+          storeId: Number(escapeHTML(String(request.storeId))),
+          createdAt: escapeHTML(request.createAt),
+          updateAt: escapeHTML(getTimeNow(new Date())),
         },
       });
-      console.log("insert: ", insert);
       return insert;
     } catch (error) {
       if (error instanceof PrismaClientValidationError) {

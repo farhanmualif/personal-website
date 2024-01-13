@@ -17,14 +17,16 @@ const HomePage = () => {
       const getData = await fetch("http://localhost:3000/api/product");
       const product = await getData.json();
       setProducts(product);
+
       // Simulate a delay
-      setTimeout(() => {
+      console.log(products.length);
+      if (products.length > 0) {
         setIsLoading(false);
-      }, 2000);
+      }
     };
 
     fetchData();
-  }, []);
+  }, [products]);
   return (
     <div>
       <section className="container mx-auto lg:px-6 bg-white dark:bg-gray-900">

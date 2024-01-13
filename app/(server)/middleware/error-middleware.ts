@@ -1,0 +1,3 @@
+function errorMiddleware(error: Error)   {
+  
+}

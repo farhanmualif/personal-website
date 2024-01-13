@@ -1,7 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
+
 import ProductServices from "../../services/product-services";
 import { RequestProduct } from "../../interface/interface";
-import getTimeNow from "../../helper/get-time";
+import getTimeNow from "../../lib/get-time";
+import {
+  productSchema,
+  validation,
+} from "@/app/(server)/validation/validation";
+import errorHandler from "../../error/error-handler";
+
+interface ProductPayload {
+  name: string;
+  price: number;
+  image: string;
+  categoryId: number;
+  storeId: number;
+}
 
 export async function GET(request: NextRequest) {
   try {
@@ -9,28 +23,62 @@ export async function GET(request: NextRequest) {
     if (searchParams.get("id")) {
       const id = searchParams.get("id");
       const product = await ProductServices.getById(Number(id));
-      return NextResponse.json(product);
+      if (!product) {
+        return NextResponse.json(
+          {
+            status: "fail",
+            message: "product not found",
+            links: {
+              self: request.url,
+            },
+            data: product,
+          },
+          {
+            status: 404,
+          }
+        );
+      }
+
+      return NextResponse.json({
+        status: "success",
+        message: "product not found",
+        links: {
+          self: request.url,
+        },
+        data: product,
+      });
     }
 
     const product = await ProductServices.getAll();
-    return NextResponse.json(product);
-  } catch (error) {
-    NextResponse.json({
-      message: error,
+    return NextResponse.json({
+      status: "success",
+      message: "product found",
+      links: {
+        self: request.url,
+      },
+      data: product,
     });
+  } catch (error) {
+    errorHandler<unknown>(error);
   }
 }
 
 export async function POST(request: NextResponse) {
   try {
-    const formData = await request.formData();
+    const { name, price, image, categoryId, storeId } = await request.json();
+
+    const payload: ProductPayload = {
+      name: String(name),
+      price: Number(price),
+      image: String(image),
+      categoryId: Number(categoryId),
+      storeId: Number(storeId),
+    };
+
+    const value = validation<ProductPayload>(productSchema, payload);
 
     const req: RequestProduct = {
-      name: String(formData.get("name")),
-      price: Number(formData.get("price")),
-      image: String(formData.get("image")),
-      categoryId: Number(formData.get("categoryId")),
-      storeId: Number(formData.get("storeId")),
+      ...value.value,
       createAt: getTimeNow(new Date()),
       updateAt: getTimeNow(new Date()),
     };
@@ -40,8 +88,6 @@ export async function POST(request: NextResponse) {
       response: insert,
     });
   } catch (error) {
-    return NextResponse.json({
-      error,
-    });
+    errorHandler<unknown>(error);
   }
 }

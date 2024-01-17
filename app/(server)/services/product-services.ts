@@ -4,7 +4,7 @@ import getTimeNow from "../lib/get-time";
 import { Product, RequestProduct } from "../interface/interface";
 import { PrismaClientValidationError } from "@prisma/client/runtime/library";
 import escapeHTML from "escape-html";
-import { ErrorException } from "../error/error-exception";
+import errorHandler from "../error/error-handler";
 
 export default class ProductServices {
   static async getAll(): Promise<Product[] | unknown> {
@@ -28,7 +28,7 @@ export default class ProductServices {
       });
       return data;
     } catch (error) {
-      return error;
+      errorHandler(error);
     }
   }
 
@@ -42,28 +42,26 @@ export default class ProductServices {
           storeName: true,
         },
       });
-      if (product) {
-        const data: Product = {
-          name: product.name,
-          price: product.price,
-          address: product.storeName.address,
-          image: product.Image,
-          rate: product.rate,
-          discount: product.discount,
-          freeShipping: product.freeShipping,
-        };
-        return data;
-      } else {
+      if (!product) {
         return null;
       }
+      const data: Product = {
+        name: product.name,
+        price: product.price,
+        address: product.storeName.address,
+        image: product.Image,
+        rate: product.rate,
+        discount: product.discount,
+        freeShipping: product.freeShipping,
+      };
+      return data;
     } catch (error) {
-      return error;
+      errorHandler(error);
     }
   }
 
   static async create(request: RequestProduct): Promise<unknown | error> {
     try {
-      console.log("request", request);
       const insert = await database.product.create({
         data: {
           name: escapeHTML(request.name),
@@ -76,10 +74,7 @@ export default class ProductServices {
       });
       return insert;
     } catch (error) {
-      if (error instanceof PrismaClientValidationError) {
-        console.log(error.message);
-      }
-      return error;
+      errorHandler(error);
     }
   }
 }

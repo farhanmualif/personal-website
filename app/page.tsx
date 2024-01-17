@@ -1,13 +1,9 @@
-import { NavbarWithMegaMenu } from "./components/nav/Nav";
-import HomePage from "./home/page";
-import Footer from "./components/footer/Footer";
+import { Login } from "./auth/login/page";
 
 export default function Home() {
   return (
     <>
-      <NavbarWithMegaMenu />
-      <HomePage />
-      <Footer />
+      <Login />
     </>
   );
 }

@@ -1,33 +1,16 @@
-"use server";
 import { NextRequest, NextResponse } from "next/server";
 import { verifyToken } from "./app/(server)/lib/jwt";
+import apiMiddleware from "./app/middleware/api-middleware";
+import clientMiddleware from "./app/middleware/client-middleware";
 
 export async function middleware(request: NextRequest) {
-  const token = request.cookies.get("token");
-  if (!token?.value) {
-    return NextResponse.json(
-      {
-        message: "not outorization",
-      },
-      {
-        status: 401,
-      }
-    );
-  }
-  const verify = await verifyToken(token.value);
-  const { email } = verify;
-  if (!email) {
-    return NextResponse.json(
-      {
-        message: "not outorization",
-      },
-      {
-        status: 401,
-      }
-    );
+  if (request.headers.get("Content-Type") == "application/json") {
+    return await apiMiddleware(request);
+  } else {
+    return await clientMiddleware(request);
   }
 }
 
 export const config = {
-  matcher: ["/api/product", "/api/user"],
+  matcher: ["/api/product", "/api/user", "/", "/home"],
 };

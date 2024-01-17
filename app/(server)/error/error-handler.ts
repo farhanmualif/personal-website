@@ -18,6 +18,7 @@ export default function errorHandler<T>(error: T) {
       }
     );
   } else if (error instanceof ErrorException) {
+    console.log("error exception");
     return NextResponse.json(
       {
         message: error.message,

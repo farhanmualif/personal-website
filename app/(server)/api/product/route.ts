@@ -23,6 +23,7 @@ export async function GET(request: NextRequest) {
     if (searchParams.get("id")) {
       const id = searchParams.get("id");
       const product = await ProductServices.getById(Number(id));
+      console.log("cek product: ", product);
       if (!product) {
         return NextResponse.json(
           {
@@ -38,10 +39,12 @@ export async function GET(request: NextRequest) {
           }
         );
       }
+      if (product) {
+      }
 
       return NextResponse.json({
         status: "success",
-        message: "product not found",
+        message: "product found",
         links: {
           self: request.url,
         },

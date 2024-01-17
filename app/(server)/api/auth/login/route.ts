@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { jwtAccessToken } from "@/app/(server)/lib/jwt";
+import { jwtAccessToken, verifyToken } from "@/app/(server)/lib/jwt";
 import database from "@/app/(server)/database/database";
 import { cookies } from "next/headers";
 
@@ -20,6 +20,7 @@ export async function POST(request: NextResponse) {
   if (!userFind) {
     return NextResponse.json(
       {
+        error: true,
         message: "username or password is wrong",
       },
       {
@@ -27,6 +28,7 @@ export async function POST(request: NextResponse) {
       }
     );
   }
+
   const token = await jwtAccessToken(payload);
   cookiesStore.set("token", String(token));
   return NextResponse.json({

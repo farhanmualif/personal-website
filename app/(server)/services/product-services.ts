@@ -2,7 +2,6 @@ import { error } from "@material-tailwind/react/types/components/input";
 import database from "../database/database";
 import getTimeNow from "../lib/get-time";
 import { Product, RequestProduct } from "../interface/interface";
-import { PrismaClientValidationError } from "@prisma/client/runtime/library";
 import escapeHTML from "escape-html";
 import errorHandler from "../error/error-handler";
 
@@ -17,6 +16,7 @@ export default class ProductServices {
 
       const data: Product[] = products.map((product) => {
         return {
+          id: product.id,
           name: product.name,
           price: product.price,
           image: product.Image,
@@ -46,6 +46,7 @@ export default class ProductServices {
         return null;
       }
       const data: Product = {
+        id: product.id,
         name: product.name,
         price: product.price,
         address: product.storeName.address,

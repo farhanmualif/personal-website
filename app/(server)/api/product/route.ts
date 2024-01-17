@@ -39,8 +39,6 @@ export async function GET(request: NextRequest) {
           }
         );
       }
-      if (product) {
-      }
 
       return NextResponse.json({
         status: "success",

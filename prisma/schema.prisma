@@ -13,14 +13,14 @@ datasource db {
 model User {
   id             Int      @id @default(autoincrement())
   uuid           String   @default(uuid())
-  roleId         Int
+  roleId         Int      @default(2)
   email          String   @unique
   password       String
   name           String?
   role           Role     @relation(fields: [roleId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   Store          Store[]
   Image          String   @default("profile_image.png")
-  updateAt       DateTime
+  updateAt       DateTime @default(now())
   createdAt      DateTime @default(now())
   Cart           Cart[]
   SellerOrders   Order[]  @relation("SellerOrders")
@@ -31,7 +31,7 @@ model Role {
   id        Int      @id @default(autoincrement())
   name      String
   User      User[]
-  updateAt  DateTime
+  updateAt  DateTime @default(now())
   createdAt DateTime @default(now())
 }
 
@@ -45,7 +45,7 @@ model Store {
   Product   Product[]
   Image     String    @default("store_image.png")
   rate      Float     @default(0)
-  updateAt  DateTime
+  updateAt  DateTime  @default(now())
   createdAt DateTime  @default(now())
 }
 
@@ -62,7 +62,7 @@ model Product {
   freeShipping Boolean         @default(false)
   storeName    Store           @relation(fields: [storeId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   Image        String          @default("default.png")
-  updateAt     DateTime
+  updateAt     DateTime        @default(now())
   createdAt    DateTime        @default(now())
   Cart         Cart[]
 }
@@ -72,7 +72,7 @@ model ProductCategory {
   uuid      String    @default(uuid())
   name      String
   Product   Product[]
-  updateAt  DateTime
+  updateAt  DateTime  @default(now())
   createdAt DateTime  @default(now())
 }
 

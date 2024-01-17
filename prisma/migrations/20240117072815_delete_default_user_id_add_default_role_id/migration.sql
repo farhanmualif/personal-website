@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE `cart` ALTER COLUMN `userId` DROP DEFAULT;
+
+-- AlterTable
+ALTER TABLE `user` MODIFY `roleId` INTEGER NOT NULL DEFAULT 2;

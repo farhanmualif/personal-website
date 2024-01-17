@@ -229,14 +229,14 @@ export function NavbarWithMegaMenu() {
           <NavList />
         </div>
         <div className="hidden gap-2 lg:flex">
-          <Button
+          {/* <Button
             className="text-gray-900"
             variant="text"
             size="sm"
             placeholder={""}>
             Log In
           </Button>
-          <Button placeholder={""}>Sign Up</Button>
+          <Button placeholder={""}>Sign Up</Button> */}
         </div>
         <IconButton
           placeholder={""}

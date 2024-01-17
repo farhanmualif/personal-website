@@ -13,21 +13,19 @@ const Dashboard = () => {
   useEffect(() => {
     // Simulate an API call or data loading
     const fetchData = async () => {
-      // Your data loading logic here
       const getData = await fetch("http://localhost:3000/api/product");
       const product = await getData.json();
       setProducts(product.data);
-
-      // Simulate a delay
-      if (products.length > 0) {
-        setIsLoading(false);
-      }
     };
 
     fetchData();
+  }, []);
 
-    console.log("cek product: ", products);
-    console.log("cek length product: ", products.length);
+  useEffect(() => {
+    // Simulate a delay
+    if (products.length > 0) {
+      setIsLoading(false);
+    }
   }, [products]);
   return (
     <div>

@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { verifyToken } from "./app/(server)/lib/jwt";
 import apiMiddleware from "./app/middleware/api-middleware";
 import clientMiddleware from "./app/middleware/client-middleware";
 

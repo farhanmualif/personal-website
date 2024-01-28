@@ -6,7 +6,7 @@ import escapeHTML from "escape-html";
 import errorHandler from "../error/error-handler";
 
 export default class ProductServices {
-  static async getAll(): Promise<Product[] | unknown> {
+  static async getAll(): Promise<Product[] | undefined> {
     try {
       const products = await database.product.findMany({
         include: {
@@ -32,11 +32,11 @@ export default class ProductServices {
     }
   }
 
-  static async getById(id: number): Promise<Product | unknown> {
+  static async getById(uuid: string): Promise<Product | unknown> {
     try {
       const product = await database.product.findUnique({
         where: {
-          id,
+          uuid,
         },
         include: {
           storeName: true,

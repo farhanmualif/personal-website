@@ -1,35 +1,48 @@
 "use client";
-import { redirect } from "next/navigation";
-import { FormEvent, useEffect, useState } from "react";
+import { getCsrfToken, getSession, signIn } from "next-auth/react";
 
 export default function FormLogin() {
-  const [isLogin, setIsLogin] = useState(false);
-  async function onSubmited(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    console.log("submited");
+  async function onSubmited(e: any) {
+    e.preventDefault();
+    const host = `${window.location.protocol}//${window.location.host}/`;
     try {
-      const formData = new FormData(event.currentTarget);
-      const respons = await fetch("/api/auth/login", {
-        headers: {
-          "Content-type": "application/json",
-        },
-        method: "POST",
-        body: JSON.stringify(Object.fromEntries(formData)),
+      // const body = {
+      //   redirect: false,
+      //   crsfToken: await getCsrfToken(),
+      //   email: e.target.email.value,
+      //   password: e.target.password.value,
+      //   callbackUrl: `${host}/home`,
+      // };
+
+      // const login = await fetch(`api/auth/signin`, {
+      //   method: "POST",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //     credentials: "include",
+      //   },
+      //   // body: JSON.stringify(body),
+      //   body: JSON.stringify(body),
+      //   credentials: "include",
+      // });
+
+      // if (!login.ok) {
+      //   throw new Error("login failure");
+      // }
+      // const session = await fetch("api/auth/session");
+      // console.log(session);
+
+      const res = await signIn("credentials", {
+        redirect: false,
+        email: e.target.email.value,
+        password: e.target.value,
       });
-      const { token } = await respons.json();
-      console.log(token);
-      if (token) {
-        setIsLogin(true);
+      if (!res?.ok) {
+        throw new Error(res?.error?.toString());
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   }
-  useEffect(() => {
-    if (isLogin) {
-      redirect("/");
-    }
-  }, [isLogin]);
   return (
     <form onSubmit={onSubmited} className="my-10">
       <div className="flex flex-col space-y-5">

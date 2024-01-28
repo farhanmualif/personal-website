@@ -3,7 +3,6 @@ import { NextResponse } from "next/server";
 import { ErrorException } from "./error-exception";
 
 export default function errorHandler<T>(error: T) {
-  console.log("error handler: ", error);
   if (error instanceof Prisma.PrismaClientValidationError) {
     return NextResponse.json(
       {
@@ -18,7 +17,6 @@ export default function errorHandler<T>(error: T) {
       }
     );
   } else if (error instanceof ErrorException) {
-    console.log("error exception");
     return NextResponse.json(
       {
         message: error.message,
@@ -26,6 +24,17 @@ export default function errorHandler<T>(error: T) {
       },
       {
         status: 404,
+        statusText: "failed",
+      }
+    );
+  } else {
+    // Default return statement
+    return NextResponse.json(
+      {
+        message: "An unknown error occurred",
+      },
+      {
+        status: 500,
         statusText: "failed",
       }
     );

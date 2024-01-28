@@ -1,52 +1,17 @@
-import { NextResponse } from "next/server";
-import { jwtAccessToken, verifyToken } from "@/app/(server)/lib/jwt";
-import database from "@/app/(server)/database/database";
-import { cookies } from "next/headers";
-import bcrypt from "bcrypt";
+import { signIn } from "next-auth/react";
+import { NextRequest, NextResponse } from "next/server";
 
-interface RequestBody {
-  email: string;
-  password: string;
-}
-
-export async function POST(request: NextResponse) {
-  const cookiesStore = cookies();
-  const payload: RequestBody = await request.json();
-  const userFind = await database.user.findUnique({
-    where: {
-      email: payload.email,
-    },
-  });
-  if (!userFind) {
-    return NextResponse.json(
-      {
-        message: "user not found",
-      },
-      {
-        status: 404,
-      }
-    );
+export async function POST(request: NextRequest) {
+  try {
+    const params = await request.json();
+    console.log(params);
+    params.redirect = false;
+    const login = await signIn("credentials", params);
+    if (login?.ok) {
+      
+    }
+    return NextResponse.json(login);
+  } catch (error) {
+    console.error(error);
   }
-  const passwordValid = await bcrypt.compare(
-    payload.password,
-    userFind.password
-  );
-  if (!passwordValid) {
-    return NextResponse.json(
-      {
-        error: true,
-        message: "password is wrong",
-      },
-      {
-        status: 401,
-      }
-    );
-  }
-
-  const token = await jwtAccessToken(payload);
-  cookiesStore.set("token", String(token));
-  return NextResponse.json({
-    ...payload,
-    token,
-  });
 }

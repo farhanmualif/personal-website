@@ -10,21 +10,58 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
 model User {
-  id             Int      @id @default(autoincrement())
-  uuid           String   @default(uuid())
-  roleId         Int      @default(2)
-  email          String   @unique
+  id             String    @id @default(cuid())
+  uuid           String    @default(uuid())
+  roleId         Int       @default(2)
+  email          String    @unique
   password       String
   name           String?
-  role           Role     @relation(fields: [roleId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  role           Role      @relation(fields: [roleId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   Store          Store[]
-  Image          String   @default("profile_image.png")
-  updateAt       DateTime @default(now())
-  createdAt      DateTime @default(now())
+  Image          String    @default("profile_image.png")
+  updateAt       DateTime  @default(now())
+  createdAt      DateTime  @default(now())
   Cart           Cart[]
-  SellerOrders   Order[]  @relation("SellerOrders")
-  CustomerOrders Order[]  @relation("CustomerOrders")
+  SellerOrders   Order[]   @relation("SellerOrders")
+  CustomerOrders Order[]   @relation("CustomerOrders")
+  Account        Account[]
+  Session        Session[]
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
 }
 
 model Role {
@@ -40,7 +77,7 @@ model Store {
   uuid      String    @default(uuid())
   name      String
   address   String
-  ownerId   Int
+  ownerId   String
   owner     User      @relation(fields: [ownerId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   Product   Product[]
   Image     String    @default("store_image.png")
@@ -51,7 +88,7 @@ model Store {
 
 model Product {
   id           Int             @id @default(autoincrement())
-  uuid         String          @default(uuid())
+  uuid         String          @unique @default(uuid())
   name         String
   price        String
   categoryId   Int
@@ -80,7 +117,7 @@ model Cart {
   id        Int     @id @default(autoincrement())
   uuid      String  @default(uuid())
   productId Int
-  userId    Int
+  userId    String
   Product   Product @relation(fields: [productId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   User      User    @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
@@ -91,8 +128,8 @@ model Order {
   productId  Int
   seller     User     @relation("SellerOrders", fields: [sellerId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   customer   User     @relation("CustomerOrders", fields: [customerId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  sellerId   Int
-  customerId Int
+  sellerId   String
+  customerId String
   Payment    Payment  @relation(fields: [paymentId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   paymentId  Int
   Shipping   Shipping @relation(fields: [shippingId], references: [id], onDelete: Cascade, onUpdate: Cascade)

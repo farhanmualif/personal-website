@@ -17,13 +17,26 @@ interface ProductPayload {
   storeId: number;
 }
 
+interface ProductResponse {
+  id: number;
+  name: string;
+  price: string;
+  image: string;
+  address: string;
+  rate: number;
+  discount: number;
+  freeShipping: boolean;
+}
+
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
+    const { searchParams, pathname } = new URL(request.url);
     if (searchParams.get("id")) {
       const id = searchParams.get("id");
-      const product = await ProductServices.getById(Number(id));
-      console.log("cek product: ", product);
+      const product: ProductResponse = (await ProductServices.getById(
+        String(id)
+      )) as ProductResponse;
+      console.log(pathname);
       if (!product) {
         return NextResponse.json(
           {

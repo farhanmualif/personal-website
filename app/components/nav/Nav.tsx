@@ -30,6 +30,7 @@ import {
   UserGroupIcon,
 } from "@heroicons/react/24/solid";
 import Link from "next/link";
+import { signIn, signOut, useSession } from "next-auth/react";
 
 const navListMenuItems = [
   {
@@ -211,6 +212,8 @@ export function NavbarWithMegaMenu() {
     );
   }, []);
 
+  const { data: session, status } = useSession();
+
   return (
     <Navbar
       className="sticky top-0 z-10 mx-auto max-w-full px-4 py-2 rounded-none shadow-sm"
@@ -229,14 +232,31 @@ export function NavbarWithMegaMenu() {
           <NavList />
         </div>
         <div className="hidden gap-2 lg:flex">
-          {/* <Button
-            className="text-gray-900"
-            variant="text"
-            size="sm"
-            placeholder={""}>
-            Log In
-          </Button>
-          <Button placeholder={""}>Sign Up</Button> */}
+          {status === "unauthenticated" ? (
+            <>
+              <Button
+                className="text-gray-900"
+                variant="text"
+                size="sm"
+                onClick={function () {
+                  signIn();
+                }}
+                placeholder={""}>
+                Log In
+              </Button>
+              <Button placeholder={""}>Sign Up</Button>
+            </>
+          ) : (
+            <>
+              <Button
+                placeholder={""}
+                onClick={function () {
+                  signOut();
+                }}>
+                Log Out
+              </Button>
+            </>
+          )}
         </div>
         <IconButton
           placeholder={""}

@@ -2,6 +2,8 @@ import Link from "next/link";
 import Image from "next/image";
 
 interface Product {
+  id: number;
+  uuid: string;
   name: string;
   price: string;
   address: string;
@@ -17,7 +19,7 @@ export default function CardMenu({ products }: { products: Product[] }) {
       <div className="container mx-auto lg:px-6 grid  grid-cols-1 gap-6 p-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
         {products.map((product, index) => (
           <article
-            key={index}
+            key={product.id}
             className="rounded-xl bg-white p-3 border-2 hover:border hover:transform hover:scale-105 duration-300 ">
             <Link href="#">
               <div className="relative flex items-end overflow-hidden rounded-xl">
@@ -76,12 +78,11 @@ export default function CardMenu({ products }: { products: Product[] }) {
                   </svg>
                   {product.address}
                 </p>
+
                 <div className="mt-2 flex items-center">
-                  {Array.from({ length: product.rate }, (_, _index): any => {
-                    index + 1;
-                  }).map((star) => (
+                  {Array.from({ length: product.rate }, (_, starIndex) => (
                     <svg
-                      key={star}
+                      key={starIndex}
                       xmlns="http://www.w3.org/2000/svg"
                       className="h-5 w-5 text-yellow-400"
                       viewBox="0 0 20 20"

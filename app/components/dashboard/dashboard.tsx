@@ -5,6 +5,7 @@ import CardSkeleton from "../card-sketon/CardSkeleton";
 import Hero from "../../img/phone-mockup.png";
 import Image from "next/image";
 import CardMenu from "../card-menu/CarrdMenu";
+import { useSession } from "next-auth/react";
 
 const Dashboard = () => {
   const [isLoading, setIsLoading] = useState(true);

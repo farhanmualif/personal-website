@@ -7,4 +7,11 @@ export default async function clientMiddleware(request: NextRequest) {
   if (token && path == "/login") {
     return NextResponse.redirect(new URL("/home", request.url));
   }
+
+  const pathSplited = path.split("/")[1];
+  if (!token && pathSplited == "product") {
+    return NextResponse.redirect(new URL("/login", request.url));
+  }
+
+  return NextResponse.next();
 }

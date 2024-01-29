@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import apiMiddleware from "./app/middleware/api-middleware";
 import clientMiddleware from "./app/middleware/client-middleware";
 
@@ -11,5 +11,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/login"],
+  matcher: ["/login", "/product/:path*"],
 };

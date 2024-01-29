@@ -30,13 +30,12 @@ interface ProductResponse {
 
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams, pathname } = new URL(request.url);
-    if (searchParams.get("id")) {
-      const id = searchParams.get("id");
-      const product: ProductResponse = (await ProductServices.getById(
+    const { searchParams, host } = new URL(request.url);
+    if (searchParams.get("uuid")) {
+      const id = searchParams.get("uuid");
+      let product: ProductResponse = (await ProductServices.getById(
         String(id)
       )) as ProductResponse;
-      console.log(pathname);
       if (!product) {
         return NextResponse.json(
           {
@@ -53,6 +52,8 @@ export async function GET(request: NextRequest) {
         );
       }
 
+      product.image = `${process.env.NEXTAUTH_URL}/image/product/${product.image}`;
+
       return NextResponse.json({
         status: "success",
         message: "product found",
@@ -63,7 +64,8 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    const product = await ProductServices.getAll();
+    let product = await ProductServices.getAll();
+
     return NextResponse.json({
       status: "success",
       message: "product found",

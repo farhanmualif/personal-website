@@ -38,22 +38,23 @@ model Session {
 }
 
 model User {
-  id             String    @id @default(cuid())
-  uuid           String    @default(uuid())
-  roleId         Int       @default(2)
-  email          String    @unique
+  id             String          @id @default(cuid())
+  uuid           String          @default(uuid())
+  roleId         Int             @default(2)
+  email          String          @unique
   password       String
   name           String?
-  role           Role      @relation(fields: [roleId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  role           Role            @relation(fields: [roleId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   Store          Store[]
-  Image          String    @default("profile_image.png")
-  updateAt       DateTime  @default(now())
-  createdAt      DateTime  @default(now())
+  Image          String          @default("profile_image.png")
+  updateAt       DateTime        @default(now())
+  createdAt      DateTime        @default(now())
   Cart           Cart[]
-  SellerOrders   Order[]   @relation("SellerOrders")
-  CustomerOrders Order[]   @relation("CustomerOrders")
+  SellerOrders   Order[]         @relation("SellerOrders")
+  CustomerOrders Order[]         @relation("CustomerOrders")
   Account        Account[]
   Session        Session[]
+  ReviewProduct  ReviewProduct[]
 }
 
 model VerificationToken {
@@ -73,35 +74,69 @@ model Role {
 }
 
 model Store {
-  id        Int       @id @default(autoincrement())
-  uuid      String    @default(uuid())
-  name      String
-  address   String
-  ownerId   String
-  owner     User      @relation(fields: [ownerId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  Product   Product[]
-  Image     String    @default("store_image.png")
-  rate      Float     @default(0)
-  updateAt  DateTime  @default(now())
-  createdAt DateTime  @default(now())
+  id          Int           @id @default(autoincrement())
+  uuid        String        @default(uuid())
+  name        String
+  image       String        @default("store_image.png")
+  address     String
+  ownerId     String
+  Product     Product[]
+  owner       User          @relation(fields: [ownerId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  updateAt    DateTime      @default(now())
+  createdAt   DateTime      @default(now())
+  ReviewStore ReviewStore[]
 }
 
 model Product {
-  id           Int             @id @default(autoincrement())
-  uuid         String          @unique @default(uuid())
-  name         String
-  price        String
-  categoryId   Int
-  storeId      Int
-  category     ProductCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  rate         Float           @default(0)
-  discount     Float?
-  freeShipping Boolean         @default(false)
-  storeName    Store           @relation(fields: [storeId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  Image        String          @default("default.png")
-  updateAt     DateTime        @default(now())
-  createdAt    DateTime        @default(now())
-  Cart         Cart[]
+  id       Int    @id @default(autoincrement())
+  uuid     String @unique @default(uuid())
+  name     String
+  price    String
+  discount Float?
+
+  description   String?
+  storeId       Int
+  categoryId    Int
+  freeShipping  Boolean         @default(false)
+  category      ProductCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  storeName     Store           @relation(fields: [storeId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  updateAt      DateTime        @default(now())
+  createdAt     DateTime        @default(now())
+  Cart          Cart[]
+  ProductImage  ProductImage[]
+  ReviewProduct ReviewProduct[]
+}
+
+model ProductImage {
+  id        Int     @id @default(autoincrement())
+  uuid      String  @unique @default(uuid())
+  name      String  @default("default.png")
+  productId Int
+  Product   Product @relation(fields: [productId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+}
+
+model ReviewProduct {
+  id        Int      @id @default(autoincrement())
+  uuid      String   @unique @default(uuid())
+  comment   String
+  rate      Float    @default(0)
+  userId    String
+  updateAt  DateTime @default(now())
+  createdAt DateTime @default(now())
+  productId Int
+  User      User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  Product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+}
+
+model ReviewStore {
+  id        Int      @id @default(autoincrement())
+  uuid      String   @unique @default(uuid())
+  comment   String
+  rate      Float    @default(0)
+  updateAt  DateTime @default(now())
+  createdAt DateTime @default(now())
+  storeId   Int
+  Store     Store    @relation(fields: [storeId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 
 model ProductCategory {
@@ -115,9 +150,9 @@ model ProductCategory {
 
 model Cart {
   id        Int     @id @default(autoincrement())
-  uuid      String  @default(uuid())
+  uuid      String  @unique @default(uuid())
   productId Int
-  userId    String
+  userId    String  @default("2")
   Product   Product @relation(fields: [productId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   User      User    @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
